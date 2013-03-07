@@ -1,6 +1,6 @@
 """
 Здесь надо реализовать dfs, bfs, ucs, A*. Первые два у меня получились, я их выложил. Подсмотрел немного,
-как делают другие, заменил bfs т.к. предыдущий оценку не проходил, хотя и работал.
+как делают другие, заменил bfs т.к. предыдущий оценку не проходил, хотя и работал. Добавил ucs, a*.
 """
 
 
@@ -121,7 +121,22 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    fringe = util.PriorityQueue()
+    visitedNodes = []
+    fringe.push([problem.getStartState(),[],0],0)
+    while not fringe.isEmpty():
+        currNode = fringe.pop()
+        if problem.isGoalState(currNode[0]):
+            return currNode[1]
+        if currNode[0] not in visitedNodes: 
+            visitedNodes.append(currNode[0])   
+            for State, Way, Price in problem.getSuccessors(currNode[0]):
+                path = currNode[1][:] 
+                totalCost = currNode[2] + Price
+                print currNode[2]
+                path.append(Way)
+                fringe.push([State, path, totalCost],totalCost)
 
 def nullHeuristic(state, problem=None):
     """
@@ -133,8 +148,22 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
     
+    
+    fringe = util.PriorityQueue()
+    visitedNodes = []
+    fringe.push([problem.getStartState(),[],0],0)
+    while not fringe.isEmpty():
+        currNode = fringe.pop()
+        if problem.isGoalState(currNode[0]):
+            return currNode[1]
+        if currNode[0] not in visitedNodes: 
+            visitedNodes.append(currNode[0])   
+            for State, Way, Price in problem.getSuccessors(currNode[0]):
+                path = currNode[1][:] 
+                totalCost = currNode[2] + Price
+                path.append(Way)
+                fringe.push([State, path, totalCost],totalCost + heuristic(State, problem))
 
 
 # Abbreviations
