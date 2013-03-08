@@ -86,17 +86,17 @@ def depthFirstSearch(problem):
     succs = {}    # copy of Successors
     
     while not problem.isGoalState(route[0]):
-    	l = len(route)
-		if not set([route[0]]).issubset(set(succs.keys())):
+		l = len(route)
+		if route[0] not in succs.keys():
 			succs.update({route[0]:problem.getSuccessors(route[0])})
 		for dir in succs[route[0]]:   
-			if not set([dir[0]]).issubset(set(succs.keys())):
+			if dir[0] not in succs.keys():
 				route.insert(0,dir[0])
 				result.append(dir[1])
 			if l != len(route): break
 		if l == len(route):
 			route.remove(route[0])
-			del result[len(result)-1]	
+			del result[len(result)-1]
     return result
 
 def breadthFirstSearch(problem):
