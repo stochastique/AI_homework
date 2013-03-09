@@ -341,12 +341,19 @@ def cornersHeuristic(state, problem):
     #walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     
     xy1 = state[0]
-    dist = []
+    distance = [] 
     for s in state[1]:
         xy2 = s
-        dist.append(abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1]))
-    dist.sort()
-    return dist[len(dist)-1]
+        xyxy = xy1[0],xy1[1],xy2[0],xy2[1]
+        if xyxy in problem.heuristicInfo.keys():
+            distance.append(problem.heuristicInfo[xyxy])
+        else:
+            prob = PositionSearchProblem(problem.state, start=xy1, goal=xy2, warn=False, visualize=False)
+	        d = len(search.bfs(prob))
+	        problem.heuristicInfo.update({xyxy:d})
+	        distance.append(d)
+        distance.sort()
+    return distance[len(distance)-1]
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -436,16 +443,23 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
     """
     #position, foodGrid = state
-    # Работает, но жутко медленно
+    # Работает, но жутко медленно. Теперь быстрее, но можно еще лучше...
     xy1 = state[0]
     foodList = state[1].asList()
     if len(state[1].asList()) == 0: return 0
-    dist = []
+    distance = []
     for foodxy in foodList:
         xy2 = foodxy
-        dist.append(mazeDistance(xy1, xy2, problem.startingGameState))
-    dist.sort()
-    return dist[len(dist)-1]
+        xyxy = xy1[0],xy1[1],xy2[0],xy2[1]
+        if xyxy in problem.heuristicInfo.keys():
+            distance.append(problem.heuristicInfo[xyxy])
+        else:
+            prob = PositionSearchProblem(problem.startingGameState, start=xy1, goal=xy2, warn=False, visualize=False)
+	        d = len(search.bfs(prob))
+	        problem.heuristicInfo.update({xyxy:d})
+	        distance.append(d)
+    distance.sort()
+    return distance[len(distance)-1]
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
